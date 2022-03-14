@@ -7,7 +7,6 @@ const typeDefs = gql`
     title: String!
     url: String!
     thumbnail: String!
-    duration: String!,
   }
 
   type SongRef {
@@ -32,7 +31,6 @@ const resolvers = {
           ref: song.url,
           title: song.title,
           thumbnail: song.thumbnails[0].url,
-          duration: song.durationInSec,
           url,
         }
       });

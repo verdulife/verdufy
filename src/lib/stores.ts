@@ -1,22 +1,19 @@
 import { browser } from '$app/env';
 import { writable } from 'svelte/store';
-import type { defaultType } from '$lib/types';
+import type { songType } from '$lib/types';
 
-const defaultStore: defaultType = {
-	first_visit: true,
-	createdAt: new Date()
-};
+let defaultCurrentSong: songType = {
+	ref: "",
+	thumbnail: '/mobile.png',
+	title: "",
+	url: "",
+}
 
-export const UserStore = writable(
-	(browser && JSON.parse(localStorage.getItem('UserStore'))) || defaultStore
+export const CurrentSong = writable(defaultCurrentSong);
+
+export const PlaylistStore = writable(
+	(browser && JSON.parse(localStorage.getItem('PlaylistStore'))) || []
 );
 
-UserStore.subscribe((val) => browser && (localStorage.UserStore = JSON.stringify(val)));
+PlaylistStore.subscribe((val) => browser && (localStorage.PlaylistStore = JSON.stringify(val)));
 
-export const CurrentSong = writable({
-	ref: "--",
-	thumbnail: '/mobile.png',
-	title: '--',
-	url: "--",
-	duration: 0,
-});

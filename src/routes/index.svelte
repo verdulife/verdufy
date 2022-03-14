@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { message } from '$lib/scripts/utils';
-	import { CurrentSong } from '$lib/stores';
+	import { PlaylistStore } from '$lib/stores';
 	import type { songType } from '$lib/types';
 
 	let searchTerm: String;
@@ -23,7 +23,6 @@
     				title
     				thumbnail
     				url
-    				duration
 					}
 				}`
 			})
@@ -39,7 +38,9 @@
 	}
 
 	function playSong(song: songType) {
-		$CurrentSong = song;
+		$PlaylistStore = [song, ...$PlaylistStore];
+
+		console.log($PlaylistStore);
 	}
 </script>
 
