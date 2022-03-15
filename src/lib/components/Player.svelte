@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
+
 	import { PlaylistStore, CurrentSong } from '$lib/stores';
 
 	$: currentSong = $PlaylistStore[$CurrentSong];
@@ -35,6 +36,11 @@
 	let audio: HTMLAudioElement;
 
 	function nextSong() {
+		if ($PlaylistStore.length === 1) {
+			audio.play();
+			return;
+		}
+
 		if ($CurrentSong + 1 < $PlaylistStore.length) {
 			$CurrentSong++;
 		} else {
@@ -71,7 +77,9 @@
 				</div>
 			</div>
 
-			<audio class="xfill" bind:this={audio} src={currentSong.url} controls autoplay />
+			<audio class="xfill" bind:this={audio} controls autoplay>
+				<source src={currentSong.url} type="audio/webm" />
+			</audio>
 		</div>
 	</footer>
 {/if}
