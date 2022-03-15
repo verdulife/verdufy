@@ -16,7 +16,9 @@ const config = {
 	}),
 
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			split: false
+		}),
 
 		// Custom aliases for Vite
 		vite: {
