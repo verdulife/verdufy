@@ -1,37 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/env';
-
 	import { PlaylistStore, CurrentSong } from '$lib/stores';
-
-	$: currentSong = $PlaylistStore[$CurrentSong];
-
-	$: if ($PlaylistStore.length) {
-		$CurrentSong = 0;
-	}
-
-	async function getSong() {
-		const req = await fetch('/graphql', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				query: `query {
-  				songRef(ref: "${currentSong.ref}") {
-						url
-					}
-				}`
-			})
-		});
-		const res = await req.json();
-
-		console.log(res);
-
-		if (res.errors) alert('Something went wrong');
-		else {
-			$PlaylistStore[$CurrentSong].url = res.data.songRef.url;
-		}
-	}
 
 	let audio: HTMLAudioElement;
 
@@ -56,6 +24,12 @@
 		}
 	}
 
+	$: currentSong = $PlaylistStore[$CurrentSong];
+
+	$: if ($PlaylistStore.length) {
+		$CurrentSong = 0;
+	}
+
 	$: if (audio) {
 		audio.addEventListener('ended', () => {
 			nextSong();
@@ -67,7 +41,7 @@
 	<footer class="row acenter xfill nowrap">
 		<img src={currentSong.thumbnail} alt={currentSong.title} />
 
-		<div class="meta col jend grow">
+		<div class="meta col jcenter grow">
 			<div class="row jbetween xfill">
 				<p>{currentSong.title}</p>
 
@@ -90,8 +64,9 @@
 		bottom: 0;
 		left: 0;
 		height: 90px;
-		background: $sec;
+		background: $black;
 		color: $pri;
+		border-top: 1px solid $pri;
 
 		img {
 			width: 90px;
@@ -100,11 +75,25 @@
 		}
 
 		.meta {
-			height: 100%;
-			padding: 0 20px;
+			p {
+				font-size: 14px;
+				color: $sec;
+				padding: 20px;
+				padding-bottom: 0;
+			}
 
-			audio::-webkit-media-controls-panel {
-				background: white;
+			button {
+				color: $grey;
+				font-size: 12px;
+				font-weight: lighter;
+			}
+
+			audio {
+				filter: invert(1);
+
+				&::-webkit-media-controls-panel {
+					background: white;
+				}
 			}
 		}
 	}

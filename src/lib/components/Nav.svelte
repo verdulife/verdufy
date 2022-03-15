@@ -1,11 +1,17 @@
+<script>
+	import { page } from '$app/stores';
+</script>
+
 <nav class="row jbetween acenter xfill">
 	<a href="/">
-		<img class="yfill" src="/favicon.svg" alt="Logo" />
+		<img height="30" src="/favicon.svg" alt="Logo" />
 	</a>
 
 	<div class="row">
-		<a class="btn sec semi" href="/">HOME</a>
-		<a class="btn sec semi" href="/about">ABOUT</a>
+		<a class="btn" class:active={$page.url.pathname === '/'} href="/">SEARCH</a>
+		<a class="btn" class:active={$page.url.pathname === '/playlists'} href="/playlists">PLAYLISTS</a
+		>
+		<a class="btn" class:active={$page.url.pathname === '/queue'} href="/queue">QUEUE</a>
 	</div>
 </nav>
 
@@ -23,7 +29,17 @@
 		}
 
 		a {
+			color: $grey;
 			margin: 0 10px;
+			transition: 200ms;
+
+			&:hover {
+				color: $sec;
+			}
+		}
+
+		.active {
+			color: $sec;
 		}
 	}
 </style>

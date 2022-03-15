@@ -5,9 +5,9 @@ const typeDefs = gql`
   type Song {
     ref: String!
     title: String!
-    url: String!
     thumbnail: String!
     length: Int!
+    url: String!
   }
 
   type SongRef {
@@ -15,29 +15,29 @@ const typeDefs = gql`
   }
 
   type Query {
-    songs(term: String!, limit: Int): [Song]!
-    songRef(ref: String!): SongRef!
+    searchSongs(term: String!, limit: Int): [Song]!
+    updateSong(ref: String!): SongRef!
   }
 `;
 
 const resolvers = {
   Query: {
-    songs: async (root, { term, limit }) => {
-      const songs = await search(term, { source: { youtube: "video" }, limit: limit || 5 });
+    searchSongs: async (root: any, { term, limit }) => {
+      const songs = await search(term, { source: { youtube: "video" }, limit: limit || 12 });
 
-      return songs.map(async (song) => {
-        const { url } = await stream(song.url);
+      return songs.map(async (metadata) => {
+        const { url } = await stream(metadata.url);
 
         return {
-          ref: song.url,
-          title: song.title,
-          thumbnail: song.thumbnails[0].url,
-          url,
-          length: song.durationInSec
+          ref: metadata.url,
+          title: metadata.title,
+          thumbnail: metadata.thumbnails[0].url,
+          length: metadata.durationInSec,
+          url
         }
       });
     },
-    songRef: async (root, { ref }) => {
+    updateSong: async (root: any, { ref }) => {
       const { url } = await stream(ref);
       return { url }
     }
