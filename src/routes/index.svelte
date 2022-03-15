@@ -39,8 +39,6 @@
 
 	function playSong(song: songType) {
 		$PlaylistStore = [song, ...$PlaylistStore];
-
-		console.log($PlaylistStore);
 	}
 </script>
 
@@ -76,6 +74,7 @@
 		background: $white;
 		color: $pri;
 		padding: 40px;
+		padding-bottom: 140px;
 
 		@media (prefers-color-scheme: dark) {
 			background: $black;

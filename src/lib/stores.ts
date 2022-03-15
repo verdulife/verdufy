@@ -1,13 +1,7 @@
 import { browser } from '$app/env';
 import { writable } from 'svelte/store';
-import type { songType } from '$lib/types';
 
-let defaultCurrentSong: songType = {
-	ref: "",
-	thumbnail: '/mobile.png',
-	title: "",
-	url: "",
-}
+let defaultCurrentSong = 0;
 
 export const CurrentSong = writable(defaultCurrentSong);
 

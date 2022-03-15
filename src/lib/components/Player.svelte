@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { PlaylistStore } from '$lib/stores';
+	import { browser } from '$app/env';
+	import { PlaylistStore, CurrentSong } from '$lib/stores';
 
-	let currentSongIndex: number = 0;
-	$: currentSong = $PlaylistStore[currentSongIndex];
+	$: currentSong = $PlaylistStore[$CurrentSong];
+
+	$: if ($PlaylistStore.length) {
+		$CurrentSong = 0;
+	}
 
 	async function getSong() {
 		const req = await fetch('/graphql', {
@@ -24,33 +28,49 @@
 
 		if (res.errors) alert('Something went wrong');
 		else {
-			$PlaylistStore[currentSongIndex].url = res.data.songRef.url;
+			$PlaylistStore[$CurrentSong].url = res.data.songRef.url;
 		}
 	}
 
 	let audio: HTMLAudioElement;
 
-	$: if (audio) {
-		audio.addEventListener('ended', () => {
-			if (currentSongIndex + 1 < $PlaylistStore.length) {
-				currentSongIndex++;
-			} else {
-				currentSongIndex = 0;
-			}
-		});
+	function nextSong() {
+		if ($CurrentSong + 1 < $PlaylistStore.length) {
+			$CurrentSong++;
+		} else {
+			$CurrentSong = 0;
+		}
 	}
 
-	$: if (currentSong) {
-		//getSong();
+	function prevSong() {
+		if ($CurrentSong - 1 > 0) {
+			$CurrentSong--;
+		} else {
+			$CurrentSong = 0;
+		}
+	}
+
+	$: if (audio) {
+		audio.addEventListener('ended', () => {
+			nextSong();
+		});
 	}
 </script>
 
 {#if currentSong}
-	<footer class="row acenter xfill">
+	<footer class="row acenter xfill nowrap">
 		<img src={currentSong.thumbnail} alt={currentSong.title} />
 
 		<div class="meta col jend grow">
-			<p>{currentSong.title}</p>
+			<div class="row jbetween xfill">
+				<p>{currentSong.title}</p>
+
+				<div class="row">
+					<button on:click={prevSong}>PREV</button>
+					<button on:click={nextSong}>NEXT</button>
+				</div>
+			</div>
+
 			<audio class="xfill" bind:this={audio} src={currentSong.url} controls autoplay />
 		</div>
 	</footer>
