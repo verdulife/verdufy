@@ -13,5 +13,5 @@ export async function query(searchTerm: string) {
 
   const { data } = await req.json();
   if (!data) return "Error fetching data";
-  return data.searchSongs;
+  return data;
 }

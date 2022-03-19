@@ -1,9 +1,30 @@
 <script lang="ts">
-	import { PlaylistStore, CurrentSong } from '$lib/stores';
+	import { PlaylistStore, CurrentSong, fetching } from '$lib/stores';
+	import { query } from '$lib/scripts/query';
 
-	function playSong(i) {
+	async function updateURL(i: number) {
+		$fetching = true;
+		const { updateSong } = await query(`
+		updateSong(ref: "${$PlaylistStore[i].ref}") {
+			url
+		}
+		`);
+
+		$PlaylistStore[i].url = updateSong.url;
 		$CurrentSong = i;
+		$fetching = false;
 	}
+
+	function playSong(i: number) {
+		updateURL(i);
+	}
+
+	function removeSong(i: number) {
+		$PlaylistStore.splice(i, 1);
+		$PlaylistStore = $PlaylistStore;
+	}
+
+	$: console.log($fetching);
 </script>
 
 <svelte:head>
@@ -16,7 +37,11 @@
 	{#if $PlaylistStore.length > 0}
 		<ul class="col acenter xfill">
 			{#each $PlaylistStore as { title, thumbnail }, i}
-				<li class="row acenter nowrap xfill" on:click={() => playSong(i)}>
+				<li
+					class="row acenter nowrap xfill"
+					on:click={() => playSong(i)}
+					on:dblclick={() => removeSong(i)}
+				>
 					<img src={thumbnail} alt={title} />
 					<h4>{title}</h4>
 				</li>

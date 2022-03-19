@@ -9,11 +9,16 @@
 <script lang="ts">
 	import 'verdu/fonts/circular.css';
 	import 'verdu/fonts/operator.css';
+
 	import Transition from '$lib/components/Transition.svelte';
 	import Nav from '$lib/components/Nav.svelte';
 	import Player from '$lib/components/Player.svelte';
 
+	import { fetching } from '$lib/stores';
+
 	export let url: string;
+
+	$: console.log($fetching);
 </script>
 
 <main>

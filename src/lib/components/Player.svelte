@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PlaylistStore, CurrentSong } from '$lib/stores';
+	import { PlaylistStore, CurrentSong, fetching } from '$lib/stores';
 
 	let audio: HTMLAudioElement;
 
@@ -26,10 +26,6 @@
 
 	$: currentSong = $PlaylistStore[$CurrentSong];
 
-	$: if ($PlaylistStore.length) {
-		$CurrentSong = 0;
-	}
-
 	$: if (audio) {
 		audio.addEventListener('ended', () => {
 			nextSong();
@@ -39,7 +35,7 @@
 
 {#if currentSong}
 	<footer class="row acenter xfill nowrap">
-		<img src={currentSong.thumbnail} alt={currentSong.title} />
+		<img class:loading={$fetching} src={currentSong.thumbnail} alt={currentSong.title} />
 
 		<div class="meta col jcenter grow">
 			<div class="row jbetween xfill">
@@ -51,16 +47,14 @@
 				</div>
 			</div>
 
-			<audio class="xfill" bind:this={audio} controls autoplay>
-				<source src={currentSong.url} type="audio/webm" />
-			</audio>
+			<audio class="xfill" bind:this={audio} src={currentSong.url} controls autoplay />
 		</div>
 	</footer>
 {/if}
 
 <style lang="scss">
 	footer {
-		position: fixed;
+		position: sticky;
 		bottom: 0;
 		left: 0;
 		height: 90px;
@@ -72,6 +66,10 @@
 			width: 90px;
 			height: 90px;
 			object-fit: cover;
+		}
+
+		.loading {
+			animation: 1s fadeIn infinite;
 		}
 
 		.meta {

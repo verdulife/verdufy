@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 let defaultCurrentSong = 0;
 
 export const CurrentSong = writable(defaultCurrentSong);
+export const fetching = writable(false);
 
 export const PlaylistStore = writable(
 	(browser && JSON.parse(localStorage.getItem('PlaylistStore'))) || []

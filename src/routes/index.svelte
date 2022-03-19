@@ -1,17 +1,16 @@
 <script lang="ts">
 	import type { songType } from '$lib/types';
 
-	import { PlaylistStore, LastSearchStore } from '$lib/stores';
+	import { PlaylistStore, LastSearchStore, CurrentSong, fetching } from '$lib/stores';
 	import { query } from '$lib/scripts/query';
 
 	let searchTerm: String;
 	let results: songType[] = $LastSearchStore;
-	let loading: Boolean = false;
 
 	async function searchSongs() {
-		loading = true;
+		$fetching = true;
 
-		results = await query(`
+		const { searchSongs } = await query(`
 			searchSongs(term: "${searchTerm}") {
 				ref
 				title
@@ -20,13 +19,22 @@
 			}
 		`);
 
+		results = searchSongs;
 		$LastSearchStore = results;
-		loading = false;
+		$fetching = false;
 	}
 
 	function addSong(song: songType) {
 		song.playlist = 'default';
+
+		$PlaylistStore.forEach((item: songType, i: number) => {
+			if (item.ref === song.ref) {
+				$PlaylistStore.splice(i, 1);
+			}
+		});
+
 		$PlaylistStore = [song, ...$PlaylistStore];
+		$CurrentSong = 0;
 	}
 </script>
 
@@ -35,7 +43,7 @@
 </svelte:head>
 
 <div class="wrapper col xfill">
-	<form class="col acenter xfill" class:loading on:submit|preventDefault={searchSongs}>
+	<form class="col acenter xfill" class:loading={$fetching} on:submit|preventDefault={searchSongs}>
 		<input
 			class="xfill"
 			type="text"
@@ -107,17 +115,19 @@
 			border-radius: 10px;
 			color: $pri;
 			overflow: hidden;
+			transition: 200ms ease;
+
+			&:hover {
+				transform: scale(0.99);
+				border: 2px solid #000;
+				box-shadow: inset 0 0 40px 20px rgba(#000, 1);
+			}
 
 			h4 {
 				background: linear-gradient(to top, rgba(#000, 0.7), rgba(#000, 0));
 				color: $white;
 				font-size: 16px;
 				padding: 20px;
-				transition: 200ms ease-in;
-
-				&:hover {
-					box-shadow: inset 0 0 40px 20px rgba(#000, 1);
-				}
 			}
 		}
 	}
