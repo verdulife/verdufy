@@ -12,5 +12,4 @@ export type songType = {
 	title: string;
 	url: string;
 	length: number;
-	playlist: string;
 }

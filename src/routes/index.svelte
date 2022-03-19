@@ -1,7 +1,13 @@
 <script lang="ts">
 	import type { songType } from '$lib/types';
 
-	import { PlaylistStore, LastSearchStore, CurrentSong, fetching } from '$lib/stores';
+	import {
+		PlaylistStore,
+		LastSearchStore,
+		CurrentSong,
+		CurrentPlaylist,
+		fetching
+	} from '$lib/stores';
 	import { query } from '$lib/scripts/query';
 
 	let searchTerm: String;
@@ -25,15 +31,14 @@
 	}
 
 	function addSong(song: songType) {
-		song.playlist = 'default';
-
-		$PlaylistStore.forEach((item: songType, i: number) => {
+		$PlaylistStore.queue.forEach((item: songType, i: number) => {
 			if (item.ref === song.ref) {
-				$PlaylistStore.splice(i, 1);
+				$PlaylistStore.queue.splice(i, 1);
 			}
 		});
 
-		$PlaylistStore = [song, ...$PlaylistStore];
+		$PlaylistStore.queue = [song, ...$PlaylistStore.queue];
+		$CurrentPlaylist = 'queue';
 		$CurrentSong = 0;
 	}
 </script>
@@ -70,13 +75,10 @@
 
 <style lang="scss">
 	.wrapper {
-		background: $white;
 		color: $pri;
-		padding: 20px 40px;
-		padding-bottom: 140px;
+		padding: 40px;
 
 		@media (prefers-color-scheme: dark) {
-			background: $black;
 			color: $sec;
 		}
 	}

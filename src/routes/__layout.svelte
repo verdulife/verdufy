@@ -14,17 +14,18 @@
 	import Nav from '$lib/components/Nav.svelte';
 	import Player from '$lib/components/Player.svelte';
 
-	import { fetching } from '$lib/stores';
+	import { fetching, paused } from '$lib/stores';
 
 	export let url: string;
 
-	$: console.log($fetching);
+	$: console.log('Fetching', $fetching);
+	$: console.log('Paused', $paused);
 </script>
 
 <main>
-	<div class="scroll">
-		<Nav />
+	<Nav />
 
+	<div class="scroll">
 		<Transition {url}>
 			<slot />
 		</Transition>
@@ -45,5 +46,11 @@
 		@media (prefers-color-scheme: dark) {
 			background: $black;
 		}
+	}
+
+	.scroll {
+		width: calc(100% - 200px);
+		height: calc(100% - 90px);
+		margin-left: 200px;
 	}
 </style>

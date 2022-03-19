@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { PlaylistStore, CurrentSong, fetching } from '$lib/stores';
+	import { PlaylistStore, CurrentSong, CurrentPlaylist, fetching, paused } from '$lib/stores';
 
 	let audio: HTMLAudioElement;
 
 	function nextSong() {
-		if ($PlaylistStore.length === 1) {
+		if ($PlaylistStore[$CurrentPlaylist].length === 1) {
 			audio.play();
 			return;
 		}
 
-		if ($CurrentSong + 1 < $PlaylistStore.length) {
+		if ($CurrentSong + 1 < $PlaylistStore[$CurrentPlaylist].length) {
 			$CurrentSong++;
 		} else {
 			$CurrentSong = 0;
@@ -24,37 +24,51 @@
 		}
 	}
 
-	$: currentSong = $PlaylistStore[$CurrentSong];
-
 	$: if (audio) {
 		audio.addEventListener('ended', () => {
 			nextSong();
 		});
 	}
+
+	let emptySong = {
+		ref: '',
+		title: 'Nothing playing',
+		thumbnail: '/mobile.png',
+		url: ''
+	};
+
+	$: currentSong = $PlaylistStore[$CurrentPlaylist][$CurrentSong] || emptySong;
 </script>
 
-{#if currentSong}
-	<footer class="row acenter xfill nowrap">
-		<img class:loading={$fetching} src={currentSong.thumbnail} alt={currentSong.title} />
+<footer class="row acenter xfill nowrap">
+	<img class:loading={$fetching} src={currentSong.thumbnail} alt={currentSong.title} />
 
-		<div class="meta col jcenter grow">
-			<div class="row jbetween xfill">
-				<p>{currentSong.title}</p>
+	<div class="meta col jcenter grow">
+		<div class="row jbetween xfill">
+			<p>{currentSong.title}</p>
 
-				<div class="row">
-					<button on:click={prevSong}>PREV</button>
-					<button on:click={nextSong}>NEXT</button>
-				</div>
+			<div class="row">
+				<button on:click={prevSong}>PREV</button>
+				<button on:click={nextSong}>NEXT</button>
 			</div>
-
-			<audio class="xfill" bind:this={audio} src={currentSong.url} controls autoplay />
 		</div>
-	</footer>
-{/if}
+
+		<div class="player row xfill">
+			<audio
+				class="xfill"
+				bind:this={audio}
+				bind:paused={$paused}
+				src={currentSong.url}
+				controls
+				autoplay
+			/>
+		</div>
+	</div>
+</footer>
 
 <style lang="scss">
 	footer {
-		position: sticky;
+		position: fixed;
 		bottom: 0;
 		left: 0;
 		height: 90px;

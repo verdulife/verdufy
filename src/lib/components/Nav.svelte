@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 </script>
 
-<nav class="row jbetween acenter xfill">
-	<a href="/">
+<nav class="col jcenter acenter yfill">
+	<a class="logo" href="/">
 		<img height="30" src="/favicon.svg" alt="Logo" />
 	</a>
 
@@ -11,26 +11,32 @@
 		<a class="btn" class:active={$page.url.pathname === '/'} href="/">SEARCH</a>
 		<a class="btn" class:active={$page.url.pathname === '/playlists'} href="/playlists">PLAYLISTS</a
 		>
-		<a class="btn" class:active={$page.url.pathname === '/queue'} href="/queue">QUEUE</a>
 	</div>
 </nav>
 
 <style lang="scss">
 	nav {
-		position: sticky;
-		inset: 0 0 auto 0;
+		position: fixed;
+		inset: 0 auto auto 0;
+		width: 200px;
+		height: calc(100% - 90px);
 		background: $white;
-		border-bottom: 1px solid $border;
+		border-right: 1px solid $sec;
 		padding: 20px;
 
 		@media (prefers-color-scheme: dark) {
-			border-bottom: 1px solid $pri;
+			border-right: 1px solid $pri;
 			background: $black;
+		}
+
+		.logo {
+			position: absolute;
+			top: 20px;
 		}
 
 		a {
 			color: $grey;
-			margin: 0 10px;
+			margin: 10px 0;
 			transition: 200ms;
 
 			&:hover {
