@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PlaylistStore, CurrentSong, CurrentPlaylist, fetching, paused } from '$lib/stores';
+	import { query } from '$lib/scripts/query';
 
 	let audio: HTMLAudioElement;
 
@@ -24,7 +25,28 @@
 		}
 	}
 
+	async function updateSong() {
+		$fetching = true;
+		try {
+			await fetch(currentSong.url);
+		} catch (error) {
+			const { updateSong } = await query(`
+			updateSong(ref: "${$PlaylistStore[$CurrentPlaylist][$CurrentSong].ref}") {
+				url
+			}
+			`);
+
+			$PlaylistStore[$CurrentPlaylist][$CurrentSong].url = updateSong.url;
+		}
+
+		$fetching = false;
+	}
+
 	$: if (audio) {
+		audio.addEventListener('suspend', () => {
+			console.log('suspend');
+		});
+
 		audio.addEventListener('ended', () => {
 			nextSong();
 		});
@@ -38,6 +60,8 @@
 	};
 
 	$: currentSong = $PlaylistStore[$CurrentPlaylist][$CurrentSong] || emptySong;
+
+	/* $: if (audio && audio.src) updateSong(); */
 </script>
 
 <footer class="row acenter xfill nowrap">
@@ -54,14 +78,7 @@
 		</div>
 
 		<div class="player row xfill">
-			<audio
-				class="xfill"
-				bind:this={audio}
-				bind:paused={$paused}
-				src={currentSong.url}
-				controls
-				autoplay
-			/>
+			<audio class="xfill" bind:this={audio} bind:paused={$paused} src={currentSong.url} controls autoplay />
 		</div>
 	</div>
 </footer>
